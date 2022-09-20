@@ -187,7 +187,7 @@ async def random_value(call: types.CallbackQuery):
                 await call.message.answer("NO certified place found try for another ")
             print("hiiiii  certified")
             # await call.message.answer("NO place found try for another in area of 15km")
-            await call.message.answer("Here is a pro tip. If you are going alone as a stag, you might want to get there earlier. You may use the options below to narrow down your preferences")   
+            # await call.message.answer("Here is a pro tip. If you are going alone as a stag, you might want to get there earlier. You may use the options below to narrow down your preferences")   
         except Exception as e:
             print(e)
             await call.message.answer("Some technical issue occurs plz try again later") 
