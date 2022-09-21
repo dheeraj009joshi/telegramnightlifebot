@@ -20,7 +20,6 @@ all_numbers=[]
 
 
 
-
 @dp.message_handler()
 async def kb_answer(message: types.Message):
     if message.text != '':
@@ -31,8 +30,9 @@ async def kb_answer(message: types.Message):
             all_numbers.append(message.text)
             await message.answer(msg)
         else:
+            # await message.reply(f"Your message is: {message.text}")
             await message.answer("Hi there! Your AI wingman for everything nightlife. Click 👉 /start to begin  ")
-    else:
-        await message.reply(f"Your message is: {message.text}")
+    # # else:
+    #     await message.reply(f"Your message is: {message.text}")
 
-executor.start_polling(dp, skip_updates=False)
+executor.start_polling(dp)

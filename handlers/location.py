@@ -4,7 +4,8 @@ from inline import inline_key
 from loader import dp
 from functions import get_data
 import pandas as pd
-a=''
+
+from geopy.geocoders import Nominatim
 @dp.message_handler(content_types=['location'])
 async def handle_location(message: types.Message):
     global aa
@@ -14,6 +15,8 @@ async def handle_location(message: types.Message):
     global lon
     lat = message.location.latitude
     lon = message.location.longitude
+        
+    # initialize Nominatim API
     await message.answer("Please wait a few moments while I scout your places. I will send a message when completed.",reply_markup=types.ReplyKeyboardRemove())
     a=get_data(lat,lon)
     a.to_csv("a.csv")
@@ -63,7 +66,7 @@ async def handle_location(message: types.Message):
             for i ,raw in df_final.iterrows():
                 raw=[raw["Place_name"],int(raw["Busy_hour"]),raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
                 try:
-              
+                    aa=aa+1
                     try:
                         if raw[1]>80:
                             Crowd=' 🔥packed'
@@ -91,18 +94,20 @@ async def handle_location(message: types.Message):
 
                     if Crowd=="":
 
-                        reply=f'''#.{aa+1}: {raw[0]}\nRating: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                        reply=f'''#.{aa}: {raw[0]}\nRating: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
                     else: 
-                        reply=f'''#.{aa+1}:  {raw[0]}\nCrowd :  {Crowd}\nRating : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                        reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nRating : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
                     await message.answer(reply)
-                    aa=aa+1
+
                     if aa>4:
                         break
                 except Exception as e:
                     print(e)
                     print(raw)
                     pass
-            await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())   
+            await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
+            await message.answer("If you would like to fully customize your nightlife experience please feel free to use the commands below 👇")   
+   
     except Exception as e:
         print(e)
         await message.answer("Some technical issue occurs plz try again later") 

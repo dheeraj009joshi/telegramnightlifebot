@@ -104,8 +104,26 @@ def get_data(lat,long):
             print(latitude)
             print(longitude)
             dist=geopy.distance.geodesic((lat,long), (latitude,(longitude))).km
-            fdistance.append("%.2f" % dist)
-        except:
+            print(dist)
+            geolocator = Nominatim(user_agent="dheeraj")
+            location = geolocator.reverse(f"{lat},{long}",exactly_one=True)
+            print(location)
+            print("gii")
+            country = location.raw['address']['country']
+            print(country)
+            all_countries=["united states"," liberia", "myanmar"]
+            if country.lower() in all_countries:
+                suffix="mi"
+                suffix_value= dist*0.62137119
+            else:
+                suffix="km"
+                suffix_value=dist
+            print(suffix)
+            print(suffix_value)
+            print(("%.2f" % suffix_value +" "+suffix ))
+            fdistance.append(("%.2f" % suffix_value +" "+suffix ))
+        except Exception as e:
+            print(e)
             fdistance.append("")
 
         try:
