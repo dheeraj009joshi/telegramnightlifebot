@@ -6,6 +6,7 @@ from .callbacks import dp
 from .location import dp
 from .scouter import dp
 from .crowd import dp
+from .top_experience import dp
 from .start import dp
 
 __all__ = ['dp']

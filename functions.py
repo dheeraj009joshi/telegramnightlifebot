@@ -5,6 +5,7 @@ import geopy.distance
 from datetime import datetime
 import pytz
 import json
+import time
 import requests
 from timezonefinder import TimezoneFinder
 # from methode import get_details
@@ -27,7 +28,7 @@ def get_busyhour(total_hours):
             d=str(total_hours).split(",")[24+hour+2]
         elif day=="Wed":
             d=str(total_hours).split(",")[2*24+hour+2]
-        elif day=="Thr":
+        elif day=="Thu":
             d=str(total_hours).split(",")[3*24+hour+2]
         elif day=="Fri":
             d=str(total_hours).split(",")[4*24+hour+2]
@@ -35,6 +36,7 @@ def get_busyhour(total_hours):
             d=str(total_hours).split(",")[5*24+hour+2]
         elif day=="Sun":
             d=str(total_hours).split(",")[6*24+hour+2]
+        # print(d)
         return d
     except:
         return ""
@@ -55,13 +57,41 @@ def get_data(lat,long):
     datetime_ist = datetime.now(user_timezone)
     day=datetime_ist.strftime('%a')
     hour=int(datetime_ist.strftime('%H'))
-    # for i in range(2):
-    
-    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&opennow=true&type=Bar&keyword=Bar&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance"
+    print(day)
+    print(hour)
+    # next=''
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&opennow=true&type=Bar&keyword=nightlife&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance"
     res = requests.request("GET", url)
-        # for t in res.json()["results"]:
-        #     response.append(t)
-    
+    for t in res.json()['results']:
+        response.append(t)
+    next=(res.json())['next_page_token']
+    print(next)
+    time.sleep(2)
+    # for i in range(4):
+    #     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&opennow=true&type=Bar&keyword=nightlife&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance&pagetoken={next}"
+    #     res = requests.request("GET", url)
+    #     print(res.json())
+    #     for t in res.json()['results']:
+    #         response.append(t)
+    #     if 'next_page_token' in res.text:
+    #         next=(res.json())['next_page_token']
+    #         print(next)
+
+    #         time.sleep(2)
+    #     else:
+    #         break
+    # if (res.json())['next_page_token']:
+    #     next=(res.json())['next_page_token']
+    #     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next}&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc"
+    #     res = requests.request("GET", url)
+    #     print(res.json())
+    #     next=(res.json())['next_page_token']
+    #     for t in res.json()["results"]:
+    #         print(t)
+    #         response.append(t)
+    # else:
+    #     print("this is ok")
+
     fgooglePlaceName=[]
     fbusy_index=[]
     fRating_n=[]
@@ -74,7 +104,8 @@ def get_data(lat,long):
 
     placetype=[]
     address=[]
-    for i in res.json()["results"]:
+    print(len(response))
+    for i in response:
         # print("hoii")
         # print(i)
         data=get_details(i['name'],i['vicinity'])
@@ -90,7 +121,13 @@ def get_data(lat,long):
             search_url.append(data['search_url'])
         except:
             search_url.append("")
-
+        print("")
+        print("")
+        print("")
+        print(get_busyhour(data['TotalBusyHour']))
+        print()
+        print("")
+        print("")
         fbusy_index.append(get_busyhour(data['TotalBusyHour']))
         # except:
         #     fbusy_index.append("")
@@ -98,36 +135,38 @@ def get_data(lat,long):
             fRating_n.append(i["user_ratings_total"])
         except:
             fRating_n.append("")
+        # try:
+        latitude=i['geometry']['location']['lat']
+        longitude=i['geometry']['location']['lng']
+        # print(latitude)
+        # print(longitude)
+        dist=geopy.distance.geodesic((lat,long), (latitude,(longitude))).km
+        print(dist)
+        geolocator = Nominatim(user_agent="dheeraj")
+        location = geolocator.reverse(f"{lat},{long}",exactly_one=True)
+        # print(location)
+        # print("gii")
+        country = location.raw['address']['country']
+        print(country)
+        all_countries=["united states"," liberia", "myanmar"]
+        if country.lower() in all_countries:
+            suffix="mi"
+            suffix_value= dist*0.62137119
+        else:
+            suffix="km"
+            suffix_value=dist
+        print(suffix)
+        print(suffix_value)
+        print(("%.2f" % suffix_value +" "+suffix ))
+        fdistance.append(("%.2f" % suffix_value +" "+suffix ))
+        # except Exception as e:
+        #     print(e)
+        #     fdistance.append("")
         try:
-            latitude=i['geometry']['location']['lat']
-            longitude=i['geometry']['location']['lng']
-            print(latitude)
-            print(longitude)
-            dist=geopy.distance.geodesic((lat,long), (latitude,(longitude))).km
-            print(dist)
-            geolocator = Nominatim(user_agent="dheeraj")
-            location = geolocator.reverse(f"{lat},{long}",exactly_one=True)
-            print(location)
-            print("gii")
-            country = location.raw['address']['country']
-            print(country)
-            all_countries=["united states"," liberia", "myanmar"]
-            if country.lower() in all_countries:
-                suffix="mi"
-                suffix_value= dist*0.62137119
-            else:
-                suffix="km"
-                suffix_value=dist
-            print(suffix)
-            print(suffix_value)
-            print(("%.2f" % suffix_value +" "+suffix ))
-            fdistance.append(("%.2f" % suffix_value +" "+suffix ))
-        except Exception as e:
-            print(e)
-            fdistance.append("")
-
-        try:
-            fplaceurl.append(data['GoogleMapLocation'])
+            place_data=str(data['GoogleMapLocation']).split("/data")
+            url=place_data[0]+"/@"+str(lat)+","+str(long)+"/data"+place_data[1]
+            print(url.replace("1e1",f"4d{long}"))
+            fplaceurl.append(url.replace("1e1",f"4d{long}"))
         except:
             fplaceurl.append("")
         try:
@@ -337,7 +376,6 @@ def get_details(placename,add):
                 "1i1125!2i976!1m6!1m2!1i0!2i0!2m2!1i1125!2i20!1m6!1m2!1i0!2i956!2m2!1i1125!2i976!37m1!1e81!42b1!47m0!49m1"
                 "!3b1"
         }
-
     search_url = "https://www.google.de/search?" + "&".join(k + "=" + str(v) for k, v in params_url.items())
     logging.info("searchterm: " + search_url)
     # print(search_url)
@@ -433,7 +471,8 @@ def get_details(placename,add):
         "AverageTimeSpent":avgTimeSpent,
         "search_url":search_url
         }
-    # print(df)
+
+    print(df)
     return df
 
 # print(get_details("Madeira & Mime Powai","Trans Ocean House, Lake Blvd Rd, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076"))
@@ -447,5 +486,5 @@ def get_details(placename,add):
 
 
 
-# print(get_data(33.9966419, -84.4191885))
+# print(get_data(19.1176, 72.9060))
 

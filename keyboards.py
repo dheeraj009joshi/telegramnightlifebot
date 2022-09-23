@@ -43,3 +43,12 @@ def rating_keyboard():
     return keyboard_inline
 
 
+def scouter_keyboard():
+    button1 = KeyboardButton(text="Top Experienced")
+    # button2 = KeyboardButton(text="⭐underdogs")
+
+    # button2 = InlineKeyboardButton(text=" 🙅‍♂️ N0", callback_data="no_i_am_not_interested")
+    keyboard_inline = ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True).add(button1)
+    return keyboard_inline
+
+

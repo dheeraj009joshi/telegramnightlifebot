@@ -18,7 +18,7 @@ async def handle_location(message: types.Message):
         
     # initialize Nominatim API
     await message.answer("Please wait a few moments while I scout your places. I will send a message when completed.",reply_markup=types.ReplyKeyboardRemove())
-    a=get_data(lat,lon)
+    a=get_data(lat, lon)
     a.to_csv("a.csv")
     fgooglePlaceName=[]
     fbusy_index=[]
@@ -51,64 +51,64 @@ async def handle_location(message: types.Message):
         "distance":fdistance
     })
 
-    try:
-        if len(a)<=0:
-            # button1 = InlineKeyboardButton(text="😃 Yes", callback_data="yes_show_lit")
-            # button2 = InlineKeyboardButton(text=" 🙅‍♂️ N0", callback_data="no_i_am_not_interested")
-            # keyboard_inline = InlineKeyboardMarkup().add(button1, button2)
-            await message.answer("there seems to be no places that are super lit tonight. ")
-        else:
-            no=10
-            if len(df_final)<10:
-                no=len(df_final)
-            await message.answer(f" Here are the most packed places in the next few hours:")
-            aa=0
-            for i ,raw in df_final.iterrows():
-                raw=[raw["Place_name"],int(raw["Busy_hour"]),raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+    # try:
+    if len(a)<=0:
+        # button1 = InlineKeyboardButton(text="😃 Yes", callback_data="yes_show_lit")
+        # button2 = InlineKeyboardButton(text=" 🙅‍♂️ N0", callback_data="no_i_am_not_interested")
+        # keyboard_inline = InlineKeyboardMarkup().add(button1, button2)
+        await message.answer("there seems to be no places that are super lit tonight. ")
+    else:
+        no=10
+        if len(df_final)<10:
+            no=len(df_final)
+        await message.answer(f" Here are the most packed places in the next few hours:")
+        aa=0
+        for i ,raw in df_final.iterrows():
+            raw=[raw["Place_name"],int(raw["Busy_hour"]) or 0,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+            try:
+                aa=aa+1
                 try:
-                    aa=aa+1
-                    try:
-                        if raw[1]>80:
-                            Crowd=' 🔥packed'
-                        elif 40<raw[1]<80:
-                            Crowd=' 🔆busy'
-                        elif 1<raw[1]<40:
-                            Crowd=' 🌀calm'
-                        elif raw[1]==0:
-                            Crowd=' 🔒closed'
-                    except Exception as e:
-                        print(e)
-                        Crowd=""
-                    try:
-                        if raw[5]=='$':
-                            Price='  🪙budget'
-                        elif raw[5] =="$$":
-                            Price=' 💵average'
-                        elif raw[5]=="$$$":
-                            Price=' 💰expensive'
-                        elif raw[1]=="$$$$":
-                            Price=' 💎vip'
-                    
-                    except:
-                        Price=raw[5]
-
-                    if Crowd=="":
-
-                        reply=f'''#.{aa}: {raw[0]}\nRating: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
-                    else: 
-                        reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nRating : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
-                    await message.answer(reply)
-
-                    if aa>4:
-                        break
+                    if raw[1]>80:
+                        Crowd=' 🔥packed'
+                    elif 40<raw[1]<80:
+                        Crowd=' 🔆busy'
+                    elif 1<raw[1]<40:
+                        Crowd=' 🌀calm'
+                    elif raw[1]==0:
+                        Crowd=' 🔒closed'
                 except Exception as e:
                     print(e)
-                    print(raw)
-                    pass
-            await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
-            await message.answer("If you would like to fully customize your nightlife experience please feel free to use the commands below 👇")   
-   
-    except Exception as e:
-        print(e)
-        await message.answer("Some technical issue occurs plz try again later") 
+                    Crowd=""
+                try:
+                    if raw[5]=='$':
+                        Price='  🪙budget'
+                    elif raw[5] =="$$":
+                        Price=' 💵average'
+                    elif raw[5]=="$$$":
+                        Price=' 💰expensive'
+                    elif raw[1]=="$$$$":
+                        Price=' 💎vip'
+                
+                except:
+                    Price=raw[5]
+
+                if Crowd=="":
+
+                    reply=f'''#.{aa}: {raw[0]}\nRating: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                else: 
+                    reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nRating : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                await message.answer(reply)
+
+                if aa>4:
+                    break
+            except Exception as e:
+                print(e)
+                print(raw)
+                pass
+        await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
+        await message.answer("If you would like to fully customize your nightlife experience please feel free to use the commands below 👇")   
+
+    # except Exception as e:
+    #     print(e)
+    #     await message.answer("Some technical issue occurs plz try again later") 
 
