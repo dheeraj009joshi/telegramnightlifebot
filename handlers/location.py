@@ -65,19 +65,19 @@ async def handle_location(message: types.Message):
             no=len(df_final)
         await message.answer(f" Here are the most packed places in the next few hours:")
         aa=0
-        for i ,raw in df_final.iterrows():
+        for i ,raw in df_final.sort_values(int("Busy_hour"),ascending=False).iterrows():
             raw=[raw["Place_name"],int(raw["Busy_hour"]) or 0,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
             try:
                 aa=aa+1
                 try:
                     if raw[1]>80:
-                        Crowd=' 🔥packed'
+                        Crowd=' 🔥packed'+f"({raw[1]})"
                     elif 40<raw[1]<80:
-                        Crowd=' 🔆busy'
+                        Crowd=' 🔆busy'+f"({raw[1]})"
                     elif 1<raw[1]<40:
-                        Crowd=' 🌀calm'
+                        Crowd=' 🌀calm'+f"({raw[1]})"
                     elif raw[1]==0:
-                        Crowd=' 🔒closed'
+                        Crowd=' 🔒closed'+f"({raw[1]})"
                 except Exception as e:
                     print(e)
                     Crowd=""

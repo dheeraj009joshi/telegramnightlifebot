@@ -61,7 +61,7 @@ def get_data(lat,long):
     print(day)
     print(hour)
     # next=''
-    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&opennow=true&type=Bar&keyword=nightlife&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance"
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&type=Bar&keyword=nightlife&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance"
     res = requests.request("GET", url)
     for t in res.json()['results']:
         response.append(t)
