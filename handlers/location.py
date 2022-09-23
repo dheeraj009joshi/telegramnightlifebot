@@ -29,6 +29,7 @@ async def handle_location(message: types.Message):
     fplong=[]
     fRating=[]
     fPriceRange=[]
+    print("hi")
     for i ,raw in a.sort_values("Busy_hour",ascending=False).iterrows():
         raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
         # if intraw[1]>=90:
@@ -52,7 +53,7 @@ async def handle_location(message: types.Message):
     })
 
     # try:
-    if len(a)<=0:
+    if len(a)==0:
         # button1 = InlineKeyboardButton(text="😃 Yes", callback_data="yes_show_lit")
         # button2 = InlineKeyboardButton(text=" 🙅‍♂️ N0", callback_data="no_i_am_not_interested")
         # keyboard_inline = InlineKeyboardMarkup().add(button1, button2)

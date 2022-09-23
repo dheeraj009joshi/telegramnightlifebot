@@ -14,6 +14,7 @@ from datetime import datetime
 import pytz
 from geopy.geocoders import Nominatim
 # from random import randint
-bot = Bot(token='5648147213:AAESRrpQ32vNGUx-I_Z9ZtfmlrWQ8VkB9dY') # TEST BOT
+bot = Bot(token='5789828218:AAHgDJC6u42mJtI-Wt-AQnDw2uBRpww_Joo') # TEST BOT
+# bot = Bot(token='5648147213:AAESRrpQ32vNGUx-I_Z9ZtfmlrWQ8VkB9dY') # main BOT
 dp = Dispatcher(bot)
 
