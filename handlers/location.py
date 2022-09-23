@@ -15,7 +15,8 @@ async def handle_location(message: types.Message):
     global lon
     lat = message.location.latitude
     lon = message.location.longitude
-        
+    print(lat)
+    print(lon)
     # initialize Nominatim API
     await message.answer("Please wait a few moments while I scout your places. I will send a message when completed.",reply_markup=types.ReplyKeyboardRemove())
     a=get_data(lat, lon)

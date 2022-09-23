@@ -49,6 +49,7 @@ def get_keyboard():
     return keyboard
 
 def get_data(lat,long):
+    print("hiihihihihih9hihioh")
     response=[]
     global day
     global hour
@@ -377,102 +378,125 @@ def get_details(placename,add):
                 "!3b1"
         }
     search_url = "https://www.google.de/search?" + "&".join(k + "=" + str(v) for k, v in params_url.items())
-    logging.info("searchterm: " + search_url)
+    logging.info(("searchterm: " + search_url))
     # print(search_url)
     ssl._create_default_https_context = ssl._create_unverified_context
     # gcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-    resp = urllib.request.urlopen(urllib.request.Request(url=search_url, data=None, headers=headers))
-    data = resp.read().decode('utf-8').split('/*""*/')[0]
+    try:
+        resp = urllib.request.urlopen(urllib.request.Request(url=search_url, data=None, headers=headers))
+        data = resp.read().decode('utf-8').split('/*""*/')[0]
 
-    jend = data.rfind("}")
-    if jend >= 0:
-        data = data[:jend + 1]
+        jend = data.rfind("}")
+        if jend >= 0:
+            data = data[:jend + 1]
 
-    jdata = json.loads(data)["d"]
-    jdata = json.loads(jdata[4:])
+        jdata = json.loads(data)["d"]
+        jdata = json.loads(jdata[4:])
 
-    info = index_get(jdata, 0, 1, 0, 14)
-    # print(info)
-    f=open("data.txt","w",encoding='utf-8')
-    f.write(str(info))
-    rating = index_get(info, 4, 7)
-    rating_n = index_get(info, 4, 8)
-    popular_times = index_get(info, 84, 0)
-    current_popularity = index_get(info, 84, 7, 1)
-    time_spent = index_get(info, 117, 0)
-    if time_spent:
+        info = index_get(jdata, 0, 1, 0, 14)
+        # print(info)
+        f=open("data.txt","w",encoding='utf-8')
+        f.write(str(info))
+        rating = index_get(info, 4, 7)
+        rating_n = index_get(info, 4, 8)
+        popular_times = index_get(info, 84, 0)
+        current_popularity = index_get(info, 84, 7, 1)
+        time_spent = index_get(info, 117, 0)
+        if time_spent:
 
-        nums = [float(f) for f in re.findall(r'\d*\.\d+|\d+', time_spent.replace(",", "."))]
-        contains_min, contains_hour = "min" in time_spent, "hour" in time_spent or "hr" in time_spent
+            nums = [float(f) for f in re.findall(r'\d*\.\d+|\d+', time_spent.replace(",", "."))]
+            contains_min, contains_hour = "min" in time_spent, "hour" in time_spent or "hr" in time_spent
 
-        time_spent = None
+            time_spent = None
 
-        if contains_min and contains_hour:
-            time_spent = [nums[0], nums[1] * 60]
-        elif contains_hour:
-            time_spent = [nums[0] * 60, (nums[0] if len(nums) == 1 else nums[1]) * 60]
-        elif contains_min:
-            time_spent = [nums[0], nums[0] if len(nums) == 1 else nums[1]]
+            if contains_min and contains_hour:
+                time_spent = [nums[0], nums[1] * 60]
+            elif contains_hour:
+                time_spent = [nums[0] * 60, (nums[0] if len(nums) == 1 else nums[1]) * 60]
+            elif contains_min:
+                time_spent = [nums[0], nums[0] if len(nums) == 1 else nums[1]]
 
-        time_spent = [int(t) for t in time_spent]
-        
-        
-    populartimes, timewait = get_popularity_for_day(popular_times)
-    rating = json.dumps(rating or "")
-    rating_n = json.dumps(rating_n or "")
-    current_popularity = current_popularity or ""
-    time_spent  = str(time_spent or []).strip('[]')
-    types = index_get(info, 13, 0) or ''
-    priceRange = len(str(index_get(info, 4, 2) or '$'))
-    address = index_get(info, 18) or ""
-    address2 = index_get(info, 14) or ""
+            time_spent = [int(t) for t in time_spent]
+            
+            
+        populartimes, timewait = get_popularity_for_day(popular_times)
+        rating = json.dumps(rating or "")
+        rating_n = json.dumps(rating_n or "")
+        current_popularity = current_popularity or ""
+        time_spent  = str(time_spent or []).strip('[]')
+        types = index_get(info, 13, 0) or ''
+        priceRange = len(str(index_get(info, 4, 2) or '$'))
+        address = index_get(info, 18) or ""
+        address2 = index_get(info, 14) or ""
 
-    tel = index_get(info, 3, 0) or index_get(info, 178, 0, 0) or 0
-    lat = index_get(info, 9, 2) or 0
-    lng = index_get(info, 9, 3) or 0
-    place_type=index_get(info, 13,0) or 0
-    desc=index_get(info, 32,1,1) 
-    # print(desc)
-    googleMapLocation = index_get(info, 27) or ""
-    facebookLink = index_get(info, 7, 0) or ""
-    placeName = index_get(info, 11) or ""
-    timeZone = index_get(info, 30) or ""
-    neighborhood = index_get(info,14) or ""
-    vibe = index_get(info,100)
-    avgTimeSpent = index_get(info,117,0) or ""
-    if priceRange == 4:
-        priceRange = '$$$$'
-    elif priceRange == 3:
-        priceRange = '$$$'
-    elif priceRange == 2:
-        priceRange = '$$'
-    else:
-        priceRange = '$'
+        tel = index_get(info, 3, 0) or index_get(info, 178, 0, 0) or 0
+        lat = index_get(info, 9, 2) or 0
+        lng = index_get(info, 9, 3) or 0
+        place_type=index_get(info, 13,0) or 0
+        desc=index_get(info, 32,1,1) 
+        # print(desc)
+        googleMapLocation = index_get(info, 27) or ""
+        facebookLink = index_get(info, 7, 0) or ""
+        placeName = index_get(info, 11) or ""
+        timeZone = index_get(info, 30) or ""
+        neighborhood = index_get(info,14) or ""
+        vibe = index_get(info,100)
+        avgTimeSpent = index_get(info,117,0) or ""
+        if priceRange == 4:
+            priceRange = '$$$$'
+        elif priceRange == 3:
+            priceRange = '$$$'
+        elif priceRange == 2:
+            priceRange = '$$'
+        else:
+            priceRange = '$'
 
 
-    df={"TotalBusyHour": populartimes or "",
-        "timewait": timewait,
-        "Rating" : rating,
-        "Rating_n" : rating_n,
-        "CurrentPopularity" : current_popularity,
-        "TimeSpent" : time_spent,
-        "Types":types,
-        "PriceRange":priceRange,
-        "Address": address,
-        "Description":desc,
-        "PhoneNumber": tel,
-        "Latitude": lat,
-        "Longitude": lng,
-        "GoogleMapLocation": googleMapLocation,
-        "FacebookLink" : facebookLink,
-        "PlaceName" : placeName,
-        "TimeZone": timeZone,
-        "Neighborhood" : neighborhood,
-        "AverageTimeSpent":avgTimeSpent,
-        "search_url":search_url
-        }
+        df={"TotalBusyHour": populartimes or "",
+            "timewait": timewait,
+            "Rating" : rating,
+            "Rating_n" : rating_n,
+            "CurrentPopularity" : current_popularity,
+            "TimeSpent" : time_spent,
+            "Types":types,
+            "PriceRange":priceRange,
+            "Address": address,
+            "Description":desc,
+            "PhoneNumber": tel,
+            "Latitude": lat,
+            "Longitude": lng,
+            "GoogleMapLocation": googleMapLocation,
+            "FacebookLink" : facebookLink,
+            "PlaceName" : placeName,
+            "TimeZone": timeZone,
+            "Neighborhood" : neighborhood,
+            "AverageTimeSpent":avgTimeSpent,
+            "search_url":search_url
+            }
 
-    print(df)
+        print(df)
+    except:
+        print("djjjj")
+        df={"TotalBusyHour":  "",
+            "timewait": "",
+            "Rating" : "",
+            "Rating_n" : "",
+            "CurrentPopularity" : "",
+            "TimeSpent" : "",
+            "Types":"",
+            "PriceRange":"",
+            "Address": "",
+            "Description":"",
+            "PhoneNumber": "",
+            "Latitude": "",
+            "Longitude": "",
+            "GoogleMapLocation": "",
+            "FacebookLink" : "",
+            "PlaceName" : "",
+            "TimeZone": "",
+            "Neighborhood" : "",
+            "AverageTimeSpent":"",}
+        pass
     return df
 
 # print(get_details("Madeira & Mime Powai","Trans Ocean House, Lake Blvd Rd, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076"))
