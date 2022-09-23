@@ -1,3 +1,4 @@
+from functions import get_keyboard
 from keyboards import scouter_keyboard
 from loader import dp
 
@@ -10,7 +11,7 @@ import pandas as pd
 async def welcome(message: types.Message):
         a = pd.read_csv("a.csv")
         # https://www.youtube.com/watch?v=Gknrbr2Ju8k
-        await message.answer("I can find the most packed spots near you. For this i need your current location", reply_markup=get_keyboard())
+        # await message.answer("I can find the most packed spots near you. For this i need your current location", reply_markup=get_keyboard())
         # try:
 
         #     aa = 0
