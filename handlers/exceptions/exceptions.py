@@ -1,4 +1,5 @@
 import pandas as pd
+
 def no_places_open():
     # a=
     pass

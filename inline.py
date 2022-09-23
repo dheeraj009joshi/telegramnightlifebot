@@ -13,5 +13,5 @@ def inline_key():
     button1 = InlineKeyboardButton(text="🔴live hottest places nearby", callback_data="live_hottest")
     button2 = InlineKeyboardButton(text="✨most reviewed places nearby", callback_data="most_reviewed_nearby")
     # button2 = InlineKeyboardButton(text=" 🙅‍♂️ N0", callback_data="no_i_am_not_interested")
-    keyboard_inline = InlineKeyboardMarkup().add(button1,button2)
+    keyboard_inline = InlineKeyboardMarkup().add(button1).add(button2)
     return keyboard_inline

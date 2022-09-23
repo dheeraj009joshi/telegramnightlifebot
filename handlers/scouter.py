@@ -66,4 +66,4 @@ async def welcome(message: types.Message):
         # except Exception as e:
         #     print(e)
         #     await message.answer("Some technical issue occurs plz try again later")
-        await message.answer("select the option",reply_markup=scouter_keyboard())   
+        await message.answer(" Work in progress. We are working to make your experience good. We will inform you when it will be ready")

@@ -7,7 +7,9 @@ import pandas as pd
 
 @dp.message_handler(commands=['popularity'])
 async def welcome(message: types.Message):
-        a = pd.read_csv("a.csv")
+    try:
+        username=str(message['from']['first_name']).replace("|","").replace("•","").replace("~","")
+        a = pd.read_csv(f"{username}.csv")
         try:
 
             aa = 0
@@ -63,3 +65,5 @@ async def welcome(message: types.Message):
             print(e)
             await message.answer("Some technical issue occurs plz try again later")
         await message.answer("If you would like to fully customize your nightlife experience please feel free to use the commands below 👇")   
+    except:
+          await message.answer("It seems there is no pre stored data for you. Please use /start to use all these commands")

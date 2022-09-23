@@ -1,10 +1,11 @@
 # from tkinter import Variable
+from base64 import encode
 from aiogram import Bot, Dispatcher, executor, types
 from inline import inline_key
 from loader import dp
 from functions import get_data
 import pandas as pd
-
+all_users_last_querry={}
 from geopy.geocoders import Nominatim
 @dp.message_handler(content_types=['location'])
 async def handle_location(message: types.Message):
@@ -20,7 +21,14 @@ async def handle_location(message: types.Message):
     # initialize Nominatim API
     await message.answer("Please wait a few moments while I scout your places. I will send a message when completed.",reply_markup=types.ReplyKeyboardRemove())
     a=get_data(lat, lon)
-    a.to_csv("a.csv")
+    username=str(message['from']['first_name']).replace("|","").replace("•","").replace("~","")
+    print(username)
+    # all_users_last_querry[username]=a
+    # w=open("userdetail.json","w")
+    # w.write(str(all_users_last_querry).encode("utf-8"))
+
+    # print(all_users_last_querry)
+    a.to_csv(f"{username}.csv")
     fgooglePlaceName=[]
     fbusy_index=[]
     fRating_n=[]
@@ -75,13 +83,13 @@ async def handle_location(message: types.Message):
                 aa=aa+1
                 try:
                     if raw[1]>80:
-                        Crowd=' 🔥packed'+f"({raw[1]})"
+                        Crowd=' 🔥packed'+f"({raw[1]})%"
                     elif 40<raw[1]<80:
-                        Crowd=' 🔆busy'+f"({raw[1]})"
+                        Crowd=' 🔆busy'+f"({raw[1]})%"
                     elif 1<raw[1]<40:
-                        Crowd=' 🌀calm'+f"({raw[1]})"
+                        Crowd=' 🌀calm'+f"({raw[1]})%"
                     elif raw[1]==0:
-                        Crowd=' 🔒closed'+f"({raw[1]})"
+                        Crowd=' 🔒closed'
                 except Exception as e:
                     print(e)
                     Crowd=""
@@ -100,9 +108,9 @@ async def handle_location(message: types.Message):
 
                 if Crowd=="":
 
-                    reply=f'''#.{aa}: {raw[0]}\nRating: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                    reply=f'''#.{aa}: {raw[0]}\nReviews: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
                 else: 
-                    reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nRating : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                    reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nReviews : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
                 await message.answer(reply)
 
                 if aa>4:
@@ -112,9 +120,8 @@ async def handle_location(message: types.Message):
                 print(raw)
                 pass
         await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
-        await message.answer("If you would like to fully customize your nightlife experience please feel free to use the commands below 👇")   
-
+        await message.answer("If you would like to fully customize your nightlife experience please feel free to use 👇 the commands below")   
+# a=a
     # except Exception as e:
     #     print(e)
-    #     await message.answer("Some technical issue occurs plz try again later") 
-
+    #     await message.answer("Some technical issue occurs plz try again later")            

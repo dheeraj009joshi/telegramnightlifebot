@@ -65,8 +65,8 @@ def get_data(lat,long):
     res = requests.request("GET", url)
     for t in res.json()['results']:
         response.append(t)
-    next=(res.json())['next_page_token']
-    print(next)
+    # next=(res.json())['next_page_token']
+    # print(next)
     time.sleep(2)
     # for i in range(4):
     #     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&opennow=true&type=Bar&keyword=nightlife&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance&pagetoken={next}"

@@ -25,18 +25,18 @@ async def random_value(call: types.CallbackQuery):
                         await call.message.answer("Here are a list of most reviewed places.")
                 try:
               
-                    try:
-                        if raw[1]>80:
-                            Crowd=' 🔥packed'
-                        elif 40<raw[1]<80:
-                            Crowd=' 🔆busy'
-                        elif 1<raw[1]<40:
-                            Crowd=' 🌀calm'
-                        elif raw[1]==0:
-                            Crowd=' 🔒closed'
-                    except Exception as e:
-                        print(e)
-                        Crowd=""
+
+                    if raw[1]>80:
+                        Crowd=' 🔥packed'+f"({raw[1]})%"
+                    elif 40<raw[1]<80:
+                        Crowd=' 🔆busy'+f"({raw[1]})%"
+                    elif 1<raw[1]<40:
+                        Crowd=' 🌀calm'+f"({raw[1]})%"
+                    elif raw[1]==0:
+                        Crowd=' 🔒closed'
+                except Exception as e:
+                    print(e)
+                    Crowd=""
                     try:
                         if raw[5]=='$':
                             Price='  🪙budget'
@@ -81,24 +81,24 @@ async def random_value(call: types.CallbackQuery):
             aa=0
             for i ,raw in a.sort_values("Busy_hour",ascending=False).iterrows():
                 raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
-                if float(raw[6])>=float(4):
+                if float(raw[6])>=float(2):
                     aa=aa+1
                     if aa==1:
-                        await call.message.answer("Here are a list of most reviewed places.")
-                try:
+                        await call.message.answer("Here are a list of live hottest places.")
+
               
-                    try:
-                        if raw[1]>80:
-                            Crowd=' 🔥packed'
-                        elif 40<raw[1]<80:
-                            Crowd=' 🔆busy'
-                        elif 1<raw[1]<40:
-                            Crowd=' 🌀calm'
-                        elif raw[1]==0:
-                            Crowd=' 🔒closed'
-                    except Exception as e:
-                        print(e)
-                        Crowd=""
+                try:
+                    if raw[1]>80:
+                        Crowd=' 🔥packed'+f"({raw[1]})%"
+                    elif 40<raw[1]<80:
+                        Crowd=' 🔆busy'+f"({raw[1]})%"
+                    elif 1<raw[1]<40:
+                        Crowd=' 🌀calm'+f"({raw[1]})%"
+                    elif raw[1]==0:
+                        Crowd=' 🔒closed'
+                except Exception as e:
+                    print(e)
+                    Crowd=""
                     try:
                         if raw[5]=='$':
                             Price='  🪙budget'
