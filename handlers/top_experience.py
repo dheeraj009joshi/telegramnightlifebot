@@ -19,7 +19,6 @@ async def welcome(message: types.Message):
         p_name=[]
         b_hours=[]
         r_numbar=[]
-        
         distance=[]
         p_url=[]
         p_range=[]

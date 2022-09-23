@@ -9,6 +9,8 @@ import pandas as pd
 @dp.message_handler(commands=['scouter'])
 async def welcome(message: types.Message):
         a = pd.read_csv("a.csv")
+        # https://www.youtube.com/watch?v=Gknrbr2Ju8k
+        await message.answer("I can find the most packed spots near you. For this i need your current location", reply_markup=get_keyboard())
         # try:
 
         #     aa = 0
