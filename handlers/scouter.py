@@ -1,5 +1,5 @@
-from functions import get_keyboard
-from keyboards import scouter_keyboard
+# from main_functions import get_keyboard
+# from keyboards import scouter_keyboard
 from loader import dp
 
 from aiogram import Bot, Dispatcher, executor, types

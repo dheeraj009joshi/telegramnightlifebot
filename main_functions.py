@@ -42,13 +42,11 @@ def get_busyhour(total_hours):
         return ""
 
 
-def get_keyboard():
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    button = InlineKeyboardButton("Get nearby hotspots", request_location=True,)
-    keyboard.add(button)
-    return keyboard
 
-def get_data(lat,long):
+
+
+
+def get_data(lat,long,query):
     print("hiihihihihih9hihioh")
     response=[]
     global day
@@ -61,38 +59,27 @@ def get_data(lat,long):
     print(day)
     print(hour)
     # next=''
-    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&type=Bar&keyword=nightlife&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance"
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&keyword={query}&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance"
     res = requests.request("GET", url)
     for t in res.json()['results']:
         response.append(t)
-    # next=(res.json())['next_page_token']
-    # print(next)
-    time.sleep(2)
-    # for i in range(4):
-    #     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&opennow=true&type=Bar&keyword=nightlife&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance&pagetoken={next}"
-    #     res = requests.request("GET", url)
-    #     print(res.json())
-    #     for t in res.json()['results']:
-    #         response.append(t)
-    #     if 'next_page_token' in res.text:
-    #         next=(res.json())['next_page_token']
-    #         print(next)
+        if 'next_page_token' in res.text:
+            next=(res.json())['next_page_token']
+            print(next)
+            time.sleep(2)
+            for i in range(5):
+                url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{long}&opennow=true&keyword={query}&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc&rankby=distance&pagetoken={next}"
+                res = requests.request("GET", url)
+                print(res.json())
+                for t in res.json()['results']:
+                    response.append(t)
+                if 'next_page_token' in res.text:
+                    next=(res.json())['next_page_token']
+                    print(next)
 
-    #         time.sleep(2)
-    #     else:
-    #         break
-    # if (res.json())['next_page_token']:
-    #     next=(res.json())['next_page_token']
-    #     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next}&key=AIzaSyCE7Ba4LoGrJcSlgMo3K9M0sAdvmUmDiIc"
-    #     res = requests.request("GET", url)
-    #     print(res.json())
-    #     next=(res.json())['next_page_token']
-    #     for t in res.json()["results"]:
-    #         print(t)
-    #         response.append(t)
-    # else:
-    #     print("this is ok")
-
+                    time.sleep(2)
+                else:
+                    break
     fgooglePlaceName=[]
     fbusy_index=[]
     fRating_n=[]
@@ -197,8 +184,6 @@ def get_data(lat,long):
         })
     df_final1.to_csv("mumbai_places.csv")
     return df_final1
-
-
 
 
 import json
@@ -502,8 +487,8 @@ def get_details(placename,add):
 # print(get_details("Madeira & Mime Powai","Trans Ocean House, Lake Blvd Rd, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076"))
 
 
-
-
+# async def message_response():
+    
 
 
 
@@ -512,3 +497,103 @@ def get_details(placename,add):
 
 # print(get_data(19.1176, 72.9060))
 
+
+async def first_response(lat , lon, query):   
+    message=types.message
+    
+    username=str(message['from']['first_name']).replace("|","").replace("•","").replace("~","")
+    print(username)
+    a.to_csv(f"{username}.csv")
+    fgooglePlaceName=[]
+    fbusy_index=[]
+    fRating_n=[]
+    fdistance=[]
+    fplaceurl=[]
+    fplat=[]
+    fplong=[]
+    fRating=[]
+    fPriceRange=[]
+    print("hi")
+    for i ,raw in a.sort_values("Busy_hour",ascending=False).iterrows():
+        raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+        # if intraw[1]>=90:
+        fgooglePlaceName.append(raw[0])
+        fdistance.append(raw[4])
+        fbusy_index.append(raw[1])
+        fRating_n.append(raw[2])
+        fplaceurl.append(raw[3])
+        # fplat.append(raw[4])
+        # fplong.append(raw[5])
+        fPriceRange.append(raw[5])
+        fRating.append(raw[6])
+    df_final=pd.DataFrame({
+        "Place_name":fgooglePlaceName,
+        "Busy_hour":fbusy_index,
+        "Rating_n":fRating_n,
+        "place_url":fplaceurl,
+        "price_range":fPriceRange,
+        "rating":fRating,
+        "distance":fdistance
+    })
+
+    # try:
+    if len(a)==0:
+        await message.answer("there seems to be no places that are super lit tonight. ")
+    else:
+        no=10
+        if len(df_final)<10:
+            no=len(df_final)
+        # await message.answer(f" Here are the most packed places in the next few hours:")
+        aa=0
+        for i ,raw in df_final.iterrows():
+            try:
+                rr=int(raw["Busy_hour"])
+            except:
+                rr=0
+            raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+            try:
+                aa=aa+1
+                try:
+                    if raw[1]>80:
+                        Crowd=' 🔥packed'
+                    elif 40<raw[1]<80:
+                        Crowd=' 🔆busy'
+                    elif 1<raw[1]<40:
+                        Crowd=' 🌀calm'
+                    elif raw[1]==0:
+                        Crowd=' 🔒closed'
+                except Exception as e:
+                    print(e)
+                    Crowd=""
+                try:
+                    if raw[5]=='$':
+                        Price='  🪙budget'
+                    elif raw[5] =="$$":
+                        Price=' 💵average'
+                    elif raw[5]=="$$$":
+                        Price=' 💰expensive'
+                    elif raw[5]=="$$$$":
+                        Price=' 💎vip'
+                
+                except:
+                    Price=raw[5]
+
+                if Crowd=="":
+
+                    reply=f'''#.{aa}: {raw[0]}\nReviews: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                else: 
+                    reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nReviews : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                await message.answer(reply)
+
+                if aa>4:
+                    break
+            except Exception as e:
+                print(e)
+                print(raw)
+                pass
+        # await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
+        await message.answer("If you would like to fully customize your nightlife experience please feel free to use 👇 the commands below")   
+# a=a
+    # except Exception as e:
+    #     print(e)
+    #     await message.answer("Some technical issue occurs plz try again later")            

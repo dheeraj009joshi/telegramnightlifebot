@@ -139,12 +139,11 @@ async def kb_answer(message: types.Message):
         elif message.text == '🌀calm':
 
             try:
-
-                aa = 0
                 for i, raw in a.sort_values("Busy_hour", ascending=False).iterrows():
                     raw = [raw["Place_name"], raw["Busy_hour"], raw["Rating_n"],
                         raw['distance'], raw['place_url'], raw["price_range"], raw["rating"]]
                     try:
+
                         if 1<int(raw[1]) < 40:
                             aa = aa+1
                             if aa == 1:
@@ -152,11 +151,11 @@ async def kb_answer(message: types.Message):
                             Crowd = ""
                             try:
                                 if raw[1]>80:
-                                    Crowd=' 🔥packed'+f"({raw[1]})%"
+                                    Crowd=' 🔥packed'
                                 elif 40<raw[1]<80:
-                                    Crowd=' 🔆busy'+f"({raw[1]})%"
+                                    Crowd=' 🔆busy'
                                 elif 1<raw[1]<40:
-                                    Crowd=' 🌀calm'+f"({raw[1]})%"
+                                    Crowd=' 🌀calm'
                                 elif raw[1]==0:
                                     Crowd=' 🔒closed'
                                 elif raw[1]==0:
@@ -173,7 +172,6 @@ async def kb_answer(message: types.Message):
                                     Price = ' 💰expensive'
                                 elif raw[1] == "$$$$":
                                     Price = ' 💎vip'
-
                             except:
                                 Price = raw[5]
 
@@ -183,14 +181,14 @@ async def kb_answer(message: types.Message):
                             else:
                                 reply = f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nRating : ⭐ {raw[2]}\nDistance :  📍 {raw[3]}\nPrice : {Price} \n\n{raw[4]}'''
                             await message.answer(reply)
-        
                             if aa > 4:
                                 break
                     except:
-                        pass
+                                pass
                 if aa == 0:
                     await message.answer("No 🌀calm places found")
-                # await message.answer("Here is a pro tip. If you are going alone as a stag, you might want to get there earlier. You may use the options below to narrow down your preferences", reply_markup=Filter_bord)
+            
+                        # await message.answer("Here is a pro tip. If you are going alone as a stag, you might want to get there earlier. You may use the options below to narrow down your preferences", reply_markup=Filter_bord)
             except Exception as e:
                 print(e)
                 await message.answer("Some technical issue occurs plz try again later")

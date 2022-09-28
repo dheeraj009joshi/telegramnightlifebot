@@ -1,136 +1,481 @@
 from aiogram import Bot, Dispatcher, executor, types
 from inline import inline_key
 from loader import dp
+from loader import bot
+# from aiogram import 
 import json
 import pandas as pd
 
-@dp.callback_query_handler(text=["live_hottest","most_reviewed_nearby"])
+from main_functions import get_data
+from short_functions import croud_busy_tags
+
+@dp.callback_query_handler(text=["stifler","jim_halpert","50_Cent"])
 async def random_value(call: types.CallbackQuery):
-    global city 
-    a = pd.read_csv("a.csv")
-    if call.data == "yes_i_am_interested":
-        global cities_button
-       
+    print(call)
+    f=open("location.txt")
+    for i in f.readlines():
+        print(i)
+        lat=float(i.split("+")[0])
+        lon=float(i.split("+")[-1])
     
-    elif call.data == "most_reviewed_nearby":
-        print("most_reviewed_nearby")
-        try:
-           
-            aa=0
-            for i ,raw in a.sort_values("Rating_n",ascending=False).iterrows():
-                raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
-                if float(raw[6])>=float(4):
-                    aa=aa+1
-                    if aa==1:
-                        await call.message.answer("Here are a list of most reviewed places.")
-                try:
-              
-
-                    if raw[1]>80:
-                        Crowd=' 🔥packed'+f"({raw[1]})%"
-                    elif 40<raw[1]<80:
-                        Crowd=' 🔆busy'+f"({raw[1]})%"
-                    elif 1<raw[1]<40:
-                        Crowd=' 🌀calm'+f"({raw[1]})%"
-                    elif raw[1]==0:
-                        Crowd=' 🔒closed'
-                except Exception as e:
-                    print(e)
-                    Crowd=""
-                    try:
-                        if raw[5]=='$':
-                            Price='  🪙budget'
-                        elif raw[5] =="$$":
-                            Price=' 💵average'
-                        elif raw[5]=="$$$":
-                            Price=' 💰expensive'
-                        elif raw[1]=="$$$$":
-                            Price=' 💎vip'
-                    
-                    except:
-                        Price=raw[5]
-
-                    if Crowd=="":
-
-                        reply=f'''#.{aa}: {raw[0]}\nRating: ⭐ {raw[2]}\nDistance : 📍 {raw[3]}\nPrice : {Price} \n\n{raw[4]}'''
-                    else: 
-                        reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nRating : ⭐ {raw[2]}\nDistance :  📍 {raw[3]}\nPrice : {Price} \n\n{raw[4]}'''
-                    await call.message.answer(reply)
- 
-                    if aa>4:
-                        break
-                except Exception as e:
-                    print(e)
-                    print(raw)
-                    pass
-            if aa==0: 
-                await call.message.answer("NO certified place found try for another ")
-            # print("hiiiii  certified")
-            await call.message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
-            # await call.message.answer("NO place found try for another in area of 15km")
-            await call.message.answer("If you would like to fully customize your nightlife experience please feel free to use the commands below 👇")   
-        except Exception as e:
-            print(e)
-            await call.message.answer("Some technical issue occurs plz try again later") 
-    
-    
-    elif call.data == "live_hottest":
-        print("live_hottest")
-        try:
-           
-            aa=0
+    if call.data == "stifler"  :
+            print("hii Stifler")
+            print(call.id)
+            # aaaaa=bot.send_animation("./data.txt")
+            ani=open("static/Stifler.mp4","rb")
+            await call.message.answer_animation(animation=ani,reply_markup=types.ReplyKeyboardRemove())
+            query="bars"
+            a=get_data(lat, lon,query)
+            username=str(call['from']['first_name']).replace("|","").replace("•","").replace("~","")
+            print(username)
+            a.to_csv(f"{username}.csv")
+            fgooglePlaceName=[]
+            fbusy_index=[]
+            fRating_n=[]
+            fdistance=[]
+            fplaceurl=[]
+            fplat=[]
+            fplong=[]
+            fRating=[]
+            fPriceRange=[]
+            print("hi")
             for i ,raw in a.sort_values("Busy_hour",ascending=False).iterrows():
                 raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
-                if float(raw[6])>=float(2):
-                    aa=aa+1
-                    if aa==1:
-                        await call.message.answer("Here are a list of live hottest places.")
+                fgooglePlaceName.append(raw[0])
+                fdistance.append(raw[4])
+                fbusy_index.append(raw[1])
+                fRating_n.append(raw[2])
+                fplaceurl.append(raw[3])
+                fPriceRange.append(raw[5])
+                fRating.append(raw[6])
+            df_final=pd.DataFrame({
+                "Place_name":fgooglePlaceName,
+                "Busy_hour":fbusy_index,
+                "Rating_n":fRating_n,
+                "place_url":fplaceurl,
+                "price_range":fPriceRange,
+                "rating":fRating,
+                "distance":fdistance
+            })
 
-              
-                try:
-                    if raw[1]>80:
-                        Crowd=' 🔥packed'+f"({raw[1]})%"
-                    elif 40<raw[1]<80:
-                        Crowd=' 🔆busy'+f"({raw[1]})%"
-                    elif 1<raw[1]<40:
-                        Crowd=' 🌀calm'+f"({raw[1]})%"
-                    elif raw[1]==0:
-                        Crowd=' 🔒closed'
-                except Exception as e:
-                    print(e)
-                    Crowd=""
+            # try:
+            if len(a)==0:
+                await call.message.answer("there seems to be no places that are super lit tonight. ")
+            else:
+                no=10
+                if len(df_final)<10:
+                    no=len(df_final)
+                aa=0
+                for i ,raw in df_final.iterrows():
                     try:
-                        if raw[5]=='$':
-                            Price='  🪙budget'
-                        elif raw[5] =="$$":
-                            Price=' 💵average'
-                        elif raw[5]=="$$$":
-                            Price=' 💰expensive'
-                        elif raw[1]=="$$$$":
-                            Price=' 💎vip'
-                    
+                        rr=int(raw["Busy_hour"])
                     except:
-                        Price=raw[5]
+                        rr=0
+                    raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+                # try:
+                    aa=aa+1
+                    if raw[1]>=70 and raw[5]=="$":
+                        ss=croud_busy_tags(raw)
+                        Crowd=ss.split("+")[0]
+                        Price=ss.split("+")[-1]
+                        if Crowd=="":
 
+                            reply=f'''#.{aa}: {raw[0]}\nReviews: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                        else: 
+                            reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nReviews : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price}  \n\n{raw[3]}'''
+                        await call.message.answer(reply)
+
+                        if aa>3:
+                                break
+                        # except Exception as e:
+                        #     print(e)
+                        #     print(raw)
+                        #     pass
+                # await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
+                await call.message.answer("If you would like to fully customize your nightlife experience please feel free to use 👇 the commands below")   
+    elif call.data == "jim_halpert" :
+            print("hii jim_halpert")
+            ani=open("static/Jim.mp4","rb")
+            await call.message.answer_animation(animation=ani,reply_markup=types.ReplyKeyboardRemove())
+            query="nightlife"
+            a=get_data(lat, lon,query)
+            username=str(call['from']['first_name']).replace("|","").replace("•","").replace("~","")
+            print(username)
+            a.to_csv(f"{username}.csv")
+            fgooglePlaceName=[]
+            fbusy_index=[]
+            fRating_n=[]
+            fdistance=[]
+            fplaceurl=[]
+            fplat=[]
+            fplong=[]
+            fRating=[]
+            fPriceRange=[]
+            print("hi")
+            for i ,raw in a.sort_values("Rating_n",ascending=False).iterrows():
+                raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+                fgooglePlaceName.append(raw[0])
+                fdistance.append(raw[4])
+                fbusy_index.append(raw[1])
+                fRating_n.append(raw[2])
+                fplaceurl.append(raw[3])
+                fPriceRange.append(raw[5])
+                fRating.append(raw[6])
+            df_final=pd.DataFrame({
+                "Place_name":fgooglePlaceName,
+                "Busy_hour":fbusy_index,
+                "Rating_n":fRating_n,
+                "place_url":fplaceurl,
+                "price_range":fPriceRange,
+                "rating":fRating,
+                "distance":fdistance
+            })
+
+            # try:
+            if len(a)==0:
+                await call.message.answer("there seems to be no places that are super lit tonight. ")
+            else:
+                no=10
+                if len(df_final)<10:
+                    no=len(df_final)
+                # await message.answer(f" Here are the most packed places in the next few hours:")
+                aa=0
+                for i ,raw in df_final.iterrows():
+                    try:
+                        rr=int(raw["Busy_hour"])
+                    except:
+                        rr=0
+                    raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+                # try:
+                    aa=aa+1
+                    if raw[1]>=70 and (raw[5]=="$$" or raw[5]=="$$") and float(raw["rating"])>=float(4.0):
+                        ss=croud_busy_tags(raw)
+                        Crowd=ss.split("+")[0]
+                        Price=ss.split("+")[-1]
+                        if Crowd=="":
+
+                            reply=f'''#.{aa}: {raw[0]}\nReviews: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                        else: 
+                            reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nReviews : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price}  \n\n{raw[3]}'''
+                        await call.message.answer(reply)
+
+                        if aa>3:
+                                break
+                        # except Exception as e:
+                        #     print(e)
+                        #     print(raw)
+                        #     pass
+                # await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
+                await call.message.answer("If you would like to fully customize your nightlife experience please feel free to use 👇 the commands below")   
+        
+    elif call.data == "50_Cent":
+            print("hii 50_Cent")
+            ani=open("static/50_cent.mp4","rb")
+            await call.message.answer_animation(animation=ani,reply_markup=types.ReplyKeyboardRemove())
+            query="nightlife"
+            a=get_data(lat, lon,query)
+            username=str(call['from']['first_name']).replace("|","").replace("•","").replace("~","")
+            print(username)
+            a.to_csv(f"{username}.csv")
+            fgooglePlaceName=[]
+            fbusy_index=[]
+            fRating_n=[]
+            fdistance=[]
+            fplaceurl=[]
+            fplat=[]
+            fplong=[]
+            fRating=[]
+            fPriceRange=[]
+            print("hi")
+            for i ,raw in a.sort_values("Rating_n",ascending=False).iterrows():
+                raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+                fgooglePlaceName.append(raw[0])
+                fdistance.append(raw[4])
+                fbusy_index.append(raw[1])
+                fRating_n.append(raw[2])
+                fplaceurl.append(raw[3])
+                fPriceRange.append(raw[5])
+                fRating.append(raw[6])
+            df_final=pd.DataFrame({
+                "Place_name":fgooglePlaceName,
+                "Busy_hour":fbusy_index,
+                "Rating_n":fRating_n,
+                "place_url":fplaceurl,
+                "price_range":fPriceRange,
+                "rating":fRating,
+                "distance":fdistance
+            })
+
+            # try:
+            if len(a)==0:
+                await call.message.answer("there seems to be no places that are super lit tonight. ")
+            else:
+                no=10
+                if len(df_final)<10:
+                    no=len(df_final)
+                # await message.answer(f" Here are the most packed places in the next few hours:")
+                aa=0
+                for i ,raw in df_final.iterrows():
+                    try:
+                        rr=int(raw["Busy_hour"])
+                    except:
+                        rr=0
+                    raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+                # try:
+                    aa=aa+1
+                    if raw[5]=="$$$" or raw[5]=="$$$$" or raw[5] == "$$$$$":
+                        ss=croud_busy_tags(raw)
+                        Crowd=ss.split("+")[0]
+                        Price=ss.split("+")[-1]
+                        if Crowd=="":
+
+                            reply=f'''#.{aa}: {raw[0]}\nReviews: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                        else: 
+                            reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nReviews : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price}  \n\n{raw[3]}'''
+                        await call.message.answer(reply)
+
+                        if aa>3:
+                                break
+                        # except Exception as e:
+                        #     print(e)
+                        #     print(raw)
+                        #     pass
+                # await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
+                await call.message.answer("If you would like to fully customize your nightlife experience please feel free to use 👇 the commands below")   
+        
+        
+        
+        
+@dp.message_handler(text=['🍺🏈 Stifler',"🍸✨ Jim Halpert","🍾💎 50 Cent"])
+async def kb_answer(message: types.Message):
+    f=open("location.txt")
+    for i in f.readlines():
+        print(i)
+        lat=float(i.split("+")[0])
+        lon=float(i.split("+")[-1])
+    if message.text=="🍺🏈 Stifler":
+        print("hii Stifler")
+        ani=open("static/Stifler.mp4","rb")
+        await message.answer_animation(animation=ani,reply_markup=types.ReplyKeyboardRemove())
+        query="bars"
+        a=get_data(lat, lon,query)
+        username=str(message['from']['first_name']).replace("|","").replace("•","").replace("~","")
+        print(username)
+        a.to_csv(f"{username}.csv")
+        fgooglePlaceName=[]
+        fbusy_index=[]
+        fRating_n=[]
+        fdistance=[]
+        fplaceurl=[]
+        fplat=[]
+        fplong=[]
+        fRating=[]
+        fPriceRange=[]
+        print("hi")
+        for i ,raw in a.sort_values("Busy_hour",ascending=False).iterrows():
+            raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+            fgooglePlaceName.append(raw[0])
+            fdistance.append(raw[4])
+            fbusy_index.append(raw[1])
+            fRating_n.append(raw[2])
+            fplaceurl.append(raw[3])
+            fPriceRange.append(raw[5])
+            fRating.append(raw[6])
+        df_final=pd.DataFrame({
+            "Place_name":fgooglePlaceName,
+            "Busy_hour":fbusy_index,
+            "Rating_n":fRating_n,
+            "place_url":fplaceurl,
+            "price_range":fPriceRange,
+            "rating":fRating,
+            "distance":fdistance
+        })
+
+        # try:
+        if len(a)==0:
+            await message.answer("there seems to be no places that are super lit tonight. ")
+        else:
+            no=10
+            if len(df_final)<10:
+                no=len(df_final)
+            aa=0
+            for i ,raw in df_final.iterrows():
+                try:
+                    rr=int(raw["Busy_hour"])
+                except:
+                    rr=0
+                raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+            # try:
+                aa=aa+1
+                if raw[1]>=70 and raw[5]=="$":
+                    ss=croud_busy_tags(raw)
+                    Crowd=ss.split("+")[0]
+                    Price=ss.split("+")[-1]
                     if Crowd=="":
 
-                        reply=f'''#.{aa}: {raw[0]}\nRating: ⭐ {raw[2]}\nDistance : 📍 {raw[3]}\nPrice : {Price} \n\n{raw[4]}'''
+                        reply=f'''#.{aa}: {raw[0]}\nReviews: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
                     else: 
-                        reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nRating : ⭐ {raw[2]}\nDistance :  📍 {raw[3]}\nPrice : {Price} \n\n{raw[4]}'''
-                    await call.message.answer(reply)
-                  
-                    if aa>4:
-                        break
-                except Exception as e:
-                    print(e)
-                    print(raw)
-                    pass
-            if aa==0: 
-                await call.message.answer("NO certified place found try for another ")
-            # print("hiiiii  certified")
-            await call.message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
-            # await call.message.answer("NO place found try for another in area of 15km")
-            await call.message.answer("If you would like to fully customize your nightlife experience please feel free to use the commands below 👇")   
-        except Exception as e:
-            print(e)
-            await call.message.answer("Some technical issue occurs plz try again later") 
+                        reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nReviews : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price}  \n\n{raw[3]}'''
+                    await message.answer(reply)
+
+                    if aa>3:
+                            break
+                    # except Exception as e:
+                    #     print(e)
+                    #     print(raw)
+                    #     pass
+            # await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
+            await message.answer("If you would like to fully customize your nightlife experience please feel free to use 👇 the commands below")   
+
+
+
+    elif message.text == "🍸✨ Jim Halpert":
+            print("hii jim_halpert")
+            ani=open("static/Jim.mp4","rb")
+            await message.answer_animation(animation=ani,reply_markup=types.ReplyKeyboardRemove())
+            query="nightlife"
+            a=get_data(lat, lon,query)
+            username=str(message['from']['first_name']).replace("|","").replace("•","").replace("~","")
+            print(username)
+            a.to_csv(f"{username}.csv")
+            fgooglePlaceName=[]
+            fbusy_index=[]
+            fRating_n=[]
+            fdistance=[]
+            fplaceurl=[]
+            fplat=[]
+            fplong=[]
+            fRating=[]
+            fPriceRange=[]
+            print("hi")
+            for i ,raw in a.sort_values("Rating_n",ascending=False).iterrows():
+                raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+                fgooglePlaceName.append(raw[0])
+                fdistance.append(raw[4])
+                fbusy_index.append(raw[1])
+                fRating_n.append(raw[2])
+                fplaceurl.append(raw[3])
+                fPriceRange.append(raw[5])
+                fRating.append(raw[6])
+            df_final=pd.DataFrame({
+                "Place_name":fgooglePlaceName,
+                "Busy_hour":fbusy_index,
+                "Rating_n":fRating_n,
+                "place_url":fplaceurl,
+                "price_range":fPriceRange,
+                "rating":fRating,
+                "distance":fdistance
+            })
+
+            # try:
+            if len(a)==0:
+                await message.answer("there seems to be no places that are super lit tonight. ")
+            else:
+                no=10
+                if len(df_final)<10:
+                    no=len(df_final)
+                # await message.answer(f" Here are the most packed places in the next few hours:")
+                aa=0
+                for i ,raw in df_final.iterrows():
+                    try:
+                        rr=int(raw["Busy_hour"])
+                    except:
+                        rr=0
+                    raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+                # try:
+                    aa=aa+1
+                    if raw[1]>=70 and (raw[5]=="$$" or raw[5]=="$$") and float(raw["rating"])>=float(4.0):
+                        ss=croud_busy_tags(raw)
+                        Crowd=ss.split("+")[0]
+                        Price=ss.split("+")[-1]
+                        if Crowd=="":
+
+                            reply=f'''#.{aa}: {raw[0]}\nReviews: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                        else: 
+                            reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nReviews : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price}  \n\n{raw[3]}'''
+                        await message.answer(reply)
+
+                        if aa>3:
+                                break
+                        # except Exception as e:
+                        #     print(e)
+                        #     print(raw)
+                        #     pass
+                # await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
+                await message.answer("If you would like to fully customize your nightlife experience please feel free to use 👇 the commands below")   
+    elif message.text == "🍾💎 50 Cent":
+            print("hii 50_Cent")
+            ani=open("static/50_cent.mp4","rb")
+            await message.answer_animation(animation=ani,reply_markup=types.ReplyKeyboardRemove())
+            query="nightlife"
+            a=get_data(lat, lon,query)
+            username=str(message['from']['first_name']).replace("|","").replace("•","").replace("~","")
+            print(username)
+            a.to_csv(f"{username}.csv")
+            fgooglePlaceName=[]
+            fbusy_index=[]
+            fRating_n=[]
+            fdistance=[]
+            fplaceurl=[]
+            fplat=[]
+            fplong=[]
+            fRating=[]
+            fPriceRange=[]
+            print("hi")
+            for i ,raw in a.sort_values("Rating_n",ascending=False).iterrows():
+                raw=[raw["Place_name"],raw["Busy_hour"],raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+                fgooglePlaceName.append(raw[0])
+                fdistance.append(raw[4])
+                fbusy_index.append(raw[1])
+                fRating_n.append(raw[2])
+                fplaceurl.append(raw[3])
+                fPriceRange.append(raw[5])
+                fRating.append(raw[6])
+            df_final=pd.DataFrame({
+                "Place_name":fgooglePlaceName,
+                "Busy_hour":fbusy_index,
+                "Rating_n":fRating_n,
+                "place_url":fplaceurl,
+                "price_range":fPriceRange,
+                "rating":fRating,
+                "distance":fdistance
+            })
+
+            # try:
+            if len(a)==0:
+                await message.answer("there seems to be no places that are super lit tonight. ")
+            else:
+                no=10
+                if len(df_final)<10:
+                    no=len(df_final)
+                # await message.answer(f" Here are the most packed places in the next few hours:")
+                aa=0
+                for i ,raw in df_final.iterrows():
+                    try:
+                        rr=int(raw["Busy_hour"])
+                    except:
+                        rr=0
+                    raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
+                # try:
+                    aa=aa+1
+                    if raw[5]=="$$$" or raw[5]=="$$$$" or raw[5] == "$$$$$":
+                        ss=croud_busy_tags(raw)
+                        Crowd=ss.split("+")[0]
+                        Price=ss.split("+")[-1]
+                        if Crowd=="":
+
+                            reply=f'''#.{aa}: {raw[0]}\nReviews: ⭐ {raw[2]}\nDistance : 📍 {raw[4]}\nPrice : {Price} \n\n{raw[3]}'''
+                        else: 
+                            reply=f'''#.{aa}:  {raw[0]}\nCrowd :  {Crowd}\nReviews : ⭐ {raw[2]}\nDistance :  📍 {raw[4]}\nPrice : {Price}  \n\n{raw[3]}'''
+                        await message.answer(reply)
+
+                        if aa>3:
+                                break
+                        # except Exception as e:
+                        #     print(e)
+                        #     print(raw)
+                        #     pass
+                # await message.answer("Here are some other popular options for finding your nightlife:",reply_markup=inline_key())
+                await message.answer("If you would like to fully customize your nightlife experience please feel free to use 👇 the commands below")   
+        
+        

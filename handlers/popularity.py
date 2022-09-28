@@ -23,14 +23,14 @@ async def welcome(message: types.Message):
                             await message.answer("Here are a list of ✨Popular hotspots. ")
                         Crowd = ""
                         try:
-                            if raw[1] > 80:
-                                Crowd = ' 🔥packed'
-                            elif 40 < raw[1] < 80:
-                                Crowd = ' 🔆busy'
-                            elif 1 < raw[1] < 40:
-                                Crowd = ' 🌀calm'
-                            elif raw[1] == 0:
-                                Crowd = ' 🔒closed'
+                            if raw[1]>80:
+                                Crowd=' 🔥packed'+f"({raw[1]})%"
+                            elif 40<raw[1]<80:
+                                Crowd=' 🔆busy'+f"({raw[1]})%"
+                            elif 1<raw[1]<40:
+                                Crowd=' 🌀calm'+f"({raw[1]})%"
+                            elif raw[1]==0:
+                                Crowd=' 🔒closed'
                         except Exception as e:
                             print(e)
                             Crowd = ""

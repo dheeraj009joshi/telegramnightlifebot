@@ -10,8 +10,8 @@ import json
 
 
 def inline_key():
-    button1 = InlineKeyboardButton(text="🔴live hottest places nearby", callback_data="live_hottest")
-    button2 = InlineKeyboardButton(text="✨most reviewed places nearby", callback_data="most_reviewed_nearby")
-    # button2 = InlineKeyboardButton(text=" 🙅‍♂️ N0", callback_data="no_i_am_not_interested")
-    keyboard_inline = InlineKeyboardMarkup().add(button1).add(button2)
+    button1 = InlineKeyboardButton(text="🍺🏈 Stifler - Stand, cheer, and chug.", callback_data="stifler")
+    button2 = InlineKeyboardButton(text="🍸✨ Jim Halpert - Sit, talk, and drink. ", callback_data="jim_halpert")
+    button3 = InlineKeyboardButton(text=" 🍾💎 50 Cent - Dance, shout, and pop. ", callback_data="50_Cent")
+    keyboard_inline = InlineKeyboardMarkup().add(button1).add(button2).add(button3)
     return keyboard_inline
