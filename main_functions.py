@@ -8,6 +8,21 @@ import json
 import time
 import requests
 from timezonefinder import TimezoneFinder
+# from distutils.cmd import Command
+from codecs import latin_1_decode
+from ctypes import resize
+from email.charset import add_alias
+from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton,Message
+from geopy.geocoders import Nominatim
+import json
+import re as r
+import requests as re
+import pandas as pd
+from datetime import datetime
+import pytz
+from geopy.geocoders import Nominatim
 # from methode import get_details
 
 
@@ -43,7 +58,14 @@ def get_busyhour(total_hours):
 
 
 
-
+def get_country(lat, lon):
+    url = f'https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json&accept-language=en&zoom=3'
+    try:
+        result = requests.get(url=url)
+        result_json = result.json()
+        return result_json['display_name']
+    except:
+        return None
 
 
 def get_data(lat,long,query):
@@ -131,13 +153,13 @@ def get_data(lat,long,query):
         dist=geopy.distance.geodesic((lat,long), (latitude,(longitude))).km
         print(dist)
         geolocator = Nominatim(user_agent="dheeraj")
-        location = geolocator.reverse(f"{lat},{long}",exactly_one=True)
+        location =get_country(lat, long)
         # print(location)
         # print("gii")
-        country = location.raw['address']['country']
-        print(country)
+        # country = location.raw['address']['country']
+        print(location)
         all_countries=["united states"," liberia", "myanmar"]
-        if country.lower() in all_countries:
+        if location.lower() in all_countries:
             suffix="mi"
             suffix_value= dist*0.62137119
         else:
