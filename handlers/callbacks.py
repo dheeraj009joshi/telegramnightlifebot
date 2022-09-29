@@ -73,8 +73,9 @@ async def random_value(call: types.CallbackQuery):
                         rr=0
                     raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
                 # try:
-                    aa=aa+1
+                    
                     if raw[1]>=70 and raw[5]=="$":
+                        aa=aa+1
                         ss=croud_busy_tags(raw)
                         Crowd=ss.split("+")[0]
                         Price=ss.split("+")[-1]
@@ -149,8 +150,9 @@ async def random_value(call: types.CallbackQuery):
                         rr=0
                     raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
                 # try:
-                    aa=aa+1
-                    if raw[1]>=70 and (raw[5]=="$$" or raw[5]=="$$") and float(raw[6])>=float(4.0):
+                    
+                    if raw[1]>=70 and (raw[5]=="$$" or raw[5]=="$$$") and float(raw[6])>=float(4.0):
+                        aa=aa+1
                         ss=croud_busy_tags(raw)
                         Crowd=ss.split("+")[0]
                         Price=ss.split("+")[-1]
@@ -226,8 +228,9 @@ async def random_value(call: types.CallbackQuery):
                         rr=0
                     raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
                 # try:
-                    aa=aa+1
+                    
                     if raw[5]=="$$$" or raw[5]=="$$$$" or raw[5] == "$$$$$":
+                        aa=aa+1
                         ss=croud_busy_tags(raw)
                         Crowd=ss.split("+")[0]
                         Price=ss.split("+")[-1]
@@ -312,8 +315,9 @@ async def kb_answer(message: types.Message):
                     rr=0
                 raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
             # try:
-                aa=aa+1
+                
                 if raw[1]>=70 and raw[5]=="$":
+                    aa=aa+1
                     ss=croud_busy_tags(raw)
                     Crowd=ss.split("+")[0]
                     Price=ss.split("+")[-1]
@@ -391,8 +395,9 @@ async def kb_answer(message: types.Message):
                         rr=0
                     raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
                 # try:
-                    aa=aa+1
-                    if raw[1]>=70 and (raw[5]=="$$" or raw[5]=="$$") and float(raw[6])>=float(4.0):
+                    
+                    if raw[1]>=70 and (raw[5]=="$$" or raw[5]=="$$$") and float(raw[6])>=float(4.0):
+                        aa=aa+1
                         ss=croud_busy_tags(raw)
                         Crowd=ss.split("+")[0]
                         Price=ss.split("+")[-1]
@@ -406,7 +411,7 @@ async def kb_answer(message: types.Message):
                         if aa>3:
                                 break
                 if aa == 0:
-                        await message.answer("No  places found")
+                    await message.answer("No  places found")
                         # except Exception as e:
                         #     print(e)
                         #     print(raw)
@@ -466,9 +471,9 @@ async def kb_answer(message: types.Message):
                     except:
                         rr=0
                     raw=[raw["Place_name"],rr,raw["Rating_n"],raw['distance'],raw['place_url'],raw["price_range"],raw["rating"]]
-                # try:
-                    aa=aa+1
+                    
                     if raw[5]=="$$$" or raw[5]=="$$$$" or raw[5] == "$$$$$":
+                        aa=aa+1
                         ss=croud_busy_tags(raw)
                         Crowd=ss.split("+")[0]
                         Price=ss.split("+")[-1]
