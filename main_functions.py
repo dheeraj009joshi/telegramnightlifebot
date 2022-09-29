@@ -159,7 +159,7 @@ def get_data(lat,long,query):
         # country = location.raw['address']['country']
         print(location)
         all_countries=["united states"," liberia", "myanmar"]
-        if location.lower() in all_countries:
+        if location.lower() or "india" in all_countries:
             suffix="mi"
             suffix_value= dist*0.62137119
         else:
